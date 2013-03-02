@@ -67,3 +67,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
     wifi.supplicant_scan_interval=15
+
+# Include non-opensource parts if available
+$(call inherit-product-if-exists, vendor/sony/qcom-common/common-vendor.mk)
