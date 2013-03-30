@@ -41,6 +41,9 @@ BOARD_EGL_CFG := device/sony/qcom-common/config/egl.cfg
 # Audio
 TARGET_QCOM_AUDIO_VARIANT := caf
 
+# Bluetoth
+BOARD_HAVE_BLUETOOTH := true
+
 # Webkit
 ENABLE_WEBGL := true
 TARGET_FORCE_CPU_UPLOAD := true
