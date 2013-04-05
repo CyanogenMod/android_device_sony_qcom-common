@@ -36,7 +36,10 @@ TARGET_QCOM_DISPLAY_VARIANT := caf
 USE_OPENGL_RENDERER := true
 TARGET_USES_ION := true
 TARGET_USES_C2D_COMPOSITION := true
+
+ifeq ($(BOARD_EGL_CFG),)
 BOARD_EGL_CFG := device/sony/qcom-common/config/egl.cfg
+endif
 
 # Audio
 TARGET_QCOM_AUDIO_VARIANT := caf
