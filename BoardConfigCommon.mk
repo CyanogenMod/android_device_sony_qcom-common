@@ -37,6 +37,9 @@ USE_OPENGL_RENDERER := true
 TARGET_USES_ION := true
 TARGET_USES_C2D_COMPOSITION := true
 
+#Camera
+COMMON_GLOBAL_CFLAGS += -DQCOM_BSP_CAMERA_ABI_HACK -DMR0_CAMERA_BLOB
+
 ifeq ($(BOARD_EGL_CFG),)
 BOARD_EGL_CFG := device/sony/qcom-common/config/egl.cfg
 endif
