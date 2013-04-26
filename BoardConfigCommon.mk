@@ -38,7 +38,7 @@ TARGET_USES_ION := true
 TARGET_USES_C2D_COMPOSITION := true
 
 ifeq ($(BOARD_EGL_CFG),)
-BOARD_EGL_CFG := device/sony/qcom-common/config/egl.cfg
+BOARD_EGL_CFG := device/sony/qcom-common/rootdir/system/lib/egl/egl.cfg
 endif
 
 # RIL
