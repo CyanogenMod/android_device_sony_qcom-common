@@ -1,425 +1,240 @@
 /*
- * Copyright (c) 2012, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (c) 2012 The CyanogenMod Project
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- * *    * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *     * Neither the name of The Linux Foundation nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
-#define LOG_NIDEBUG 0
-
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <dlfcn.h>
-#include <stdlib.h>
 
-#define LOG_TAG "QCOM PowerHAL"
+#define LOG_TAG "CM PowerHAL"
 #include <utils/Log.h>
+
 #include <hardware/hardware.h>
 #include <hardware/power.h>
 
-#include "utils.h"
-#include "metadata-defs.h"
-#include "hint-data.h"
-#include "performance.h"
-
-#define NODE_MAX (64)
-
 #define SCALING_GOVERNOR_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
-#define DCVS_CPU0_SLACK_MAX_NODE "/sys/module/msm_dcvs/cores/cpu0/slack_time_max_us"
-#define DCVS_CPU0_SLACK_MIN_NODE "/sys/module/msm_dcvs/cores/cpu0/slack_time_min_us"
-#define MPDECISION_SLACK_MAX_NODE "/sys/module/msm_mpdecision/slack_time_max_us"
-#define MPDECISION_SLACK_MIN_NODE "/sys/module/msm_mpdecision/slack_time_min_us"
+#define BOOSTPULSE_ONDEMAND "/sys/devices/system/cpu/cpufreq/ondemand/boostpulse"
+#define BOOSTPULSE_INTERACTIVE "/sys/devices/system/cpu/cpufreq/interactive/boostpulse"
+#define SAMPLING_RATE_SCREEN_ON "50000"
+#define SAMPLING_RATE_SCREEN_OFF "500000"
+#define TIMER_RATE_SCREEN_ON "30000"
+#define TIMER_RATE_SCREEN_OFF "500000"
 
-#define ONDEMAND_GOVERNOR "ondemand"
-#define INTERACTIVE_GOVERNOR "interactive"
-#define MSMDCVS_GOVERNOR "msm-dcvs"
+struct cm_power_module {
+    struct power_module base;
+    pthread_mutex_t lock;
+    int boostpulse_fd;
+    int boostpulse_warned;
+};
 
-static int saved_ondemand_sampling_down_factor = 4;
-static int saved_ondemand_io_is_busy_status = 1;
-static int saved_dcvs_cpu0_slack_max = -1;
-static int saved_dcvs_cpu0_slack_min = -1;
-static int saved_mpdecision_slack_max = -1;
-static int saved_mpdecision_slack_min = -1;
-static int saved_interactive_mode = -1;
-static int slack_node_rw_failed = 0;
+static char governor[20];
+
+static int sysfs_read(char *path, char *s, int num_bytes)
+{
+    char buf[80];
+    int count;
+    int ret = 0;
+    int fd = open(path, O_RDONLY);
+
+    if (fd < 0) {
+        strerror_r(errno, buf, sizeof(buf));
+        ALOGE("Error opening %s: %s\n", path, buf);
+
+        return -1;
+    }
+
+    if ((count = read(fd, s, num_bytes - 1)) < 0) {
+        strerror_r(errno, buf, sizeof(buf));
+        ALOGE("Error writing to %s: %s\n", path, buf);
+
+        ret = -1;
+    } else {
+        s[count] = '\0';
+    }
+
+    close(fd);
+
+    return ret;
+}
+
+static void sysfs_write(char *path, char *s)
+{
+    char buf[80];
+    int len;
+    int fd = open(path, O_WRONLY);
+
+    if (fd < 0) {
+        strerror_r(errno, buf, sizeof(buf));
+        ALOGE("Error opening %s: %s\n", path, buf);
+        return;
+    }
+
+    len = write(fd, s, strlen(s));
+    if (len < 0) {
+        strerror_r(errno, buf, sizeof(buf));
+        ALOGE("Error writing to %s: %s\n", path, buf);
+    }
+
+    close(fd);
+}
+
+static int get_scaling_governor() {
+    if (sysfs_read(SCALING_GOVERNOR_PATH, governor,
+                sizeof(governor)) == -1) {
+        return -1;
+    } else {
+        // Strip newline at the end.
+        int len = strlen(governor);
+
+        len--;
+
+        while (len >= 0 && (governor[len] == '\n' || governor[len] == '\r'))
+            governor[len--] = '\0';
+    }
+
+    return 0;
+}
+
+static void cm_power_set_interactive(struct power_module *module, int on)
+{
+    if (strncmp(governor, "ondemand", 8) == 0)
+        sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/sampling_rate",
+                on ? SAMPLING_RATE_SCREEN_ON : SAMPLING_RATE_SCREEN_OFF);
+    else if (strncmp(governor, "interactive", 11) == 0)
+        sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/timer_rate",
+                on ? TIMER_RATE_SCREEN_ON : TIMER_RATE_SCREEN_OFF);
+}
+
+
+static void configure_governor()
+{
+    cm_power_set_interactive(NULL, 1);
+
+    if (strncmp(governor, "ondemand", 8) == 0) {
+        sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/up_threshold", "90");
+        sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/io_is_busy", "1");
+        sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor", "4");
+        sysfs_write("/sys/devices/system/cpu/cpufreq/ondemand/down_differential", "10");
+
+    } else if (strncmp(governor, "interactive", 11) == 0) {
+        sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/min_sample_time", "90000");
+        sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/io_is_busy", "1");
+        sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/hispeed_freq", "1134000");
+        sysfs_write("/sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay", "30000");
+    }
+}
+
+static int boostpulse_open(struct cm_power_module *cm)
+{
+    char buf[80];
+
+    pthread_mutex_lock(&cm->lock);
+
+    if (cm->boostpulse_fd < 0) {
+        if (get_scaling_governor() < 0) {
+            ALOGE("Can't read scaling governor.");
+            cm->boostpulse_warned = 1;
+        } else {
+            if (strncmp(governor, "ondemand", 8) == 0)
+                cm->boostpulse_fd = open(BOOSTPULSE_ONDEMAND, O_WRONLY);
+            else if (strncmp(governor, "interactive", 11) == 0)
+                cm->boostpulse_fd = open(BOOSTPULSE_INTERACTIVE, O_WRONLY);
+
+            if (cm->boostpulse_fd < 0 && !cm->boostpulse_warned) {
+                strerror_r(errno, buf, sizeof(buf));
+                ALOGV("Error opening boostpulse: %s\n", buf);
+                cm->boostpulse_warned = 1;
+            } else if (cm->boostpulse_fd > 0) {
+                configure_governor();
+                ALOGD("Opened %s boostpulse interface", governor);
+            }
+        }
+    }
+
+    pthread_mutex_unlock(&cm->lock);
+    return cm->boostpulse_fd;
+}
+
+static void cm_power_hint(struct power_module *module, power_hint_t hint,
+                            void *data)
+{
+    struct cm_power_module *cm = (struct cm_power_module *) module;
+    char buf[80];
+    int len;
+    int duration = 1;
+
+    switch (hint) {
+    case POWER_HINT_INTERACTION:
+    case POWER_HINT_CPU_BOOST:
+        if (boostpulse_open(cm) >= 0) {
+            if (data != NULL)
+                duration = (int) data;
+
+            snprintf(buf, sizeof(buf), "%d", duration);
+            len = write(cm->boostpulse_fd, buf, strlen(buf));
+
+            if (len < 0) {
+                strerror_r(errno, buf, sizeof(buf));
+	            ALOGE("Error writing to boostpulse: %s\n", buf);
+
+                pthread_mutex_lock(&cm->lock);
+                close(cm->boostpulse_fd);
+                cm->boostpulse_fd = -1;
+                cm->boostpulse_warned = 0;
+                pthread_mutex_unlock(&cm->lock);
+            }
+        }
+        break;
+
+    case POWER_HINT_VSYNC:
+        break;
+
+    default:
+        break;
+    }
+}
+
+static void cm_power_init(struct power_module *module)
+{
+    get_scaling_governor();
+    configure_governor();
+}
 
 static struct hw_module_methods_t power_module_methods = {
     .open = NULL,
 };
 
-static void power_init(struct power_module *module)
-{
-    ALOGI("QCOM power HAL initing.");
-}
-
-static void process_video_decode_hint(void *metadata)
-{
-    char governor[80];
-    struct video_decode_metadata_t video_decode_metadata;
-
-    if (get_scaling_governor(governor, sizeof(governor)) == -1) {
-        ALOGE("Can't obtain scaling governor.");
-
-        return;
-    }
-
-    if (metadata) {
-        ALOGI("Processing video decode hint. Metadata: %s", (char *)metadata);
-    }
-
-    /* Initialize encode metadata struct fields. */
-    memset(&video_decode_metadata, 0, sizeof(struct video_decode_metadata_t));
-    video_decode_metadata.state = -1;
-    video_decode_metadata.hint_id = DEFAULT_VIDEO_DECODE_HINT_ID;
-
-    if (metadata) {
-        if (parse_video_decode_metadata((char *)metadata, &video_decode_metadata) ==
-            -1) {
-            ALOGE("Error occurred while parsing metadata.");
-            return;
-        }
-    } else {
-        return;
-    }
-
-    if (video_decode_metadata.state == 1) {
-        if ((strncmp(governor, ONDEMAND_GOVERNOR, strlen(ONDEMAND_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(ONDEMAND_GOVERNOR))) {
-        } else if ((strncmp(governor, INTERACTIVE_GOVERNOR, strlen(INTERACTIVE_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(INTERACTIVE_GOVERNOR))) {
-            int resource_values[] = {TR_MS_30, HISPEED_LOAD_90, HS_FREQ_1026};
-
-            perform_hint_action(video_decode_metadata.hint_id,
-                    resource_values, sizeof(resource_values)/sizeof(resource_values[0]));
-        }
-    } else if (video_decode_metadata.state == 0) {
-        if ((strncmp(governor, ONDEMAND_GOVERNOR, strlen(ONDEMAND_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(ONDEMAND_GOVERNOR))) {
-        } else if ((strncmp(governor, INTERACTIVE_GOVERNOR, strlen(INTERACTIVE_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(INTERACTIVE_GOVERNOR))) {
-            undo_hint_action(video_decode_metadata.hint_id);
-        }
-    }
-}
-
-static void process_video_encode_hint(void *metadata)
-{
-    char governor[80];
-    struct video_encode_metadata_t video_encode_metadata;
-
-    if (get_scaling_governor(governor, sizeof(governor)) == -1) {
-        ALOGE("Can't obtain scaling governor.");
-
-        return;
-    }
-
-    /* Initialize encode metadata struct fields. */
-    memset(&video_encode_metadata, 0, sizeof(struct video_encode_metadata_t));
-    video_encode_metadata.state = -1;
-    video_encode_metadata.hint_id = DEFAULT_VIDEO_ENCODE_HINT_ID;
-
-    if (metadata) {
-        if (parse_video_encode_metadata((char *)metadata, &video_encode_metadata) ==
-            -1) {
-            ALOGE("Error occurred while parsing metadata.");
-            return;
-        }
-    } else {
-        return;
-    }
-
-    if (video_encode_metadata.state == 1) {
-        if ((strncmp(governor, ONDEMAND_GOVERNOR, strlen(ONDEMAND_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(ONDEMAND_GOVERNOR))) {
-            int resource_values[] = {IO_BUSY_OFF, SAMPLING_DOWN_FACTOR_1};
-
-            perform_hint_action(video_encode_metadata.hint_id,
-                resource_values, sizeof(resource_values)/sizeof(resource_values[0]));
-        } else if ((strncmp(governor, INTERACTIVE_GOVERNOR, strlen(INTERACTIVE_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(INTERACTIVE_GOVERNOR))) {
-            int resource_values[] = {TR_MS_30, HISPEED_LOAD_90, HS_FREQ_1026};
-
-            perform_hint_action(video_encode_metadata.hint_id,
-                    resource_values, sizeof(resource_values)/sizeof(resource_values[0]));
-        }
-    } else if (video_encode_metadata.state == 0) {
-        if ((strncmp(governor, ONDEMAND_GOVERNOR, strlen(ONDEMAND_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(ONDEMAND_GOVERNOR))) {
-            undo_hint_action(video_encode_metadata.hint_id);
-        } else if ((strncmp(governor, INTERACTIVE_GOVERNOR, strlen(INTERACTIVE_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(INTERACTIVE_GOVERNOR))) {
-            undo_hint_action(video_encode_metadata.hint_id);
-        }
-    }
-}
-
-int __attribute__ ((weak)) power_hint_override(struct power_module *module, power_hint_t hint,
-        void *data)
-{
-    return -1;
-}
-
-static void power_hint(struct power_module *module, power_hint_t hint,
-        void *data)
-{
-    /* Check if this hint has been overridden. */
-    if (power_hint_override(module, hint, data) == 0) {
-        /* The power_hint has been handled. We can skip the rest. */
-        return;
-    }
-
-    switch(hint) {
-        case POWER_HINT_VSYNC:
-        break;
-        case POWER_HINT_INTERACTION:
-        break;
-        case POWER_HINT_VIDEO_ENCODE:
-            process_video_encode_hint(data);
-        break;
-        case POWER_HINT_VIDEO_DECODE:
-            process_video_decode_hint(data);
-        break;
-
-    }
-}
-
-int __attribute__ ((weak)) set_interactive_override(struct power_module *module, int on)
-{
-    return -1;
-}
-
-void set_interactive(struct power_module *module, int on)
-{
-    char governor[80];
-    char tmp_str[NODE_MAX];
-    struct video_encode_metadata_t video_encode_metadata;
-    int rc;
-
-    if (set_interactive_override(module, on) == 0) {
-        return;
-    }
-
-    if (get_scaling_governor(governor, sizeof(governor)) == -1) {
-        ALOGE("Can't obtain scaling governor.");
-
-        return;
-    }
-
-    if (!on) {
-        /* Display off. */
-        if ((strncmp(governor, ONDEMAND_GOVERNOR, strlen(ONDEMAND_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(ONDEMAND_GOVERNOR))) {
-            int resource_values[] = {MS_500};
-
-            perform_hint_action(DISPLAY_STATE_HINT_ID,
-                    resource_values, sizeof(resource_values)/sizeof(resource_values[0]));
-        } else if ((strncmp(governor, INTERACTIVE_GOVERNOR, strlen(INTERACTIVE_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(INTERACTIVE_GOVERNOR))) {
-            int resource_values[] = {TR_MS_500};
-
-            perform_hint_action(DISPLAY_STATE_HINT_ID,
-                    resource_values, sizeof(resource_values)/sizeof(resource_values[0]));
-        } else if ((strncmp(governor, MSMDCVS_GOVERNOR, strlen(MSMDCVS_GOVERNOR)) == 0) && 
-                (strlen(governor) == strlen(MSMDCVS_GOVERNOR))) {
-            if (saved_interactive_mode == 1){
-                /* Display turned off. */
-                if (sysfs_read(DCVS_CPU0_SLACK_MAX_NODE, tmp_str, NODE_MAX - 1)) {
-                    if (!slack_node_rw_failed) {
-                        ALOGE("Failed to read from %s", DCVS_CPU0_SLACK_MAX_NODE);
-                    }
-
-                    rc = 1;
-                } else {
-                    saved_dcvs_cpu0_slack_max = atoi(tmp_str);
-                }
-
-                if (sysfs_read(DCVS_CPU0_SLACK_MIN_NODE, tmp_str, NODE_MAX - 1)) {
-                    if (!slack_node_rw_failed) {
-                        ALOGE("Failed to read from %s", DCVS_CPU0_SLACK_MIN_NODE);
-                    }
-
-                    rc = 1;
-                } else {
-                    saved_dcvs_cpu0_slack_min = atoi(tmp_str);
-                }
-
-                if (sysfs_read(MPDECISION_SLACK_MAX_NODE, tmp_str, NODE_MAX - 1)) {
-                    if (!slack_node_rw_failed) {
-                        ALOGE("Failed to read from %s", MPDECISION_SLACK_MAX_NODE);
-                    }
-
-                    rc = 1;
-                } else {
-                    saved_mpdecision_slack_max = atoi(tmp_str);
-                }
-
-                if (sysfs_read(MPDECISION_SLACK_MIN_NODE, tmp_str, NODE_MAX - 1)) {
-                    if(!slack_node_rw_failed) {
-                        ALOGE("Failed to read from %s", MPDECISION_SLACK_MIN_NODE);
-                    }
-
-                    rc = 1;
-                } else {
-                    saved_mpdecision_slack_min = atoi(tmp_str);
-                }
-
-                /* Write new values. */
-                if (saved_dcvs_cpu0_slack_max != -1) {
-                    snprintf(tmp_str, NODE_MAX, "%d", 10 * saved_dcvs_cpu0_slack_max);
-
-                    if (sysfs_write(DCVS_CPU0_SLACK_MAX_NODE, tmp_str) != 0) {
-                        if (!slack_node_rw_failed) {
-                            ALOGE("Failed to write to %s", DCVS_CPU0_SLACK_MAX_NODE);
-                        }
-
-                        rc = 1;
-                    }
-                }
-
-                if (saved_dcvs_cpu0_slack_min != -1) {
-                    snprintf(tmp_str, NODE_MAX, "%d", 10 * saved_dcvs_cpu0_slack_min);
-
-                    if (sysfs_write(DCVS_CPU0_SLACK_MIN_NODE, tmp_str) != 0) {
-                        if(!slack_node_rw_failed) {
-                            ALOGE("Failed to write to %s", DCVS_CPU0_SLACK_MIN_NODE);
-                        }
-
-                        rc = 1;
-                    }
-                }
-
-                if (saved_mpdecision_slack_max != -1) {
-                    snprintf(tmp_str, NODE_MAX, "%d", 10 * saved_mpdecision_slack_max);
-
-                    if (sysfs_write(MPDECISION_SLACK_MAX_NODE, tmp_str) != 0) {
-                        if(!slack_node_rw_failed) {
-                            ALOGE("Failed to write to %s", MPDECISION_SLACK_MAX_NODE);
-                        }
-
-                        rc = 1;
-                    }
-                }
-
-                if (saved_mpdecision_slack_min != -1) {
-                    snprintf(tmp_str, NODE_MAX, "%d", 10 * saved_mpdecision_slack_min);
-
-                    if (sysfs_write(MPDECISION_SLACK_MIN_NODE, tmp_str) != 0) {
-                        if(!slack_node_rw_failed) {
-                            ALOGE("Failed to write to %s", MPDECISION_SLACK_MIN_NODE);
-                        }
-
-                        rc = 1;
-                    }
-                }
-            }
-
-            slack_node_rw_failed = rc;
-        }
-    } else {
-        /* Display on. */
-        if ((strncmp(governor, ONDEMAND_GOVERNOR, strlen(ONDEMAND_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(ONDEMAND_GOVERNOR))) {
-            undo_hint_action(DISPLAY_STATE_HINT_ID);
-        } else if ((strncmp(governor, INTERACTIVE_GOVERNOR, strlen(INTERACTIVE_GOVERNOR)) == 0) &&
-                (strlen(governor) == strlen(INTERACTIVE_GOVERNOR))) {
-            undo_hint_action(DISPLAY_STATE_HINT_ID);
-        } else if ((strncmp(governor, MSMDCVS_GOVERNOR, strlen(MSMDCVS_GOVERNOR)) == 0) && 
-                (strlen(governor) == strlen(MSMDCVS_GOVERNOR))) {
-            if (saved_interactive_mode == -1 || saved_interactive_mode == 0) {
-                /* Display turned on. Restore if possible. */
-                if (saved_dcvs_cpu0_slack_max != -1) {
-                    snprintf(tmp_str, NODE_MAX, "%d", saved_dcvs_cpu0_slack_max);
-
-                    if (sysfs_write(DCVS_CPU0_SLACK_MAX_NODE, tmp_str) != 0) {
-                        if (!slack_node_rw_failed) {
-                            ALOGE("Failed to write to %s", DCVS_CPU0_SLACK_MAX_NODE);
-                        }
-
-                        rc = 1;
-                    }
-                }
-
-                if (saved_dcvs_cpu0_slack_min != -1) {
-                    snprintf(tmp_str, NODE_MAX, "%d", saved_dcvs_cpu0_slack_min);
-
-                    if (sysfs_write(DCVS_CPU0_SLACK_MIN_NODE, tmp_str) != 0) {
-                        if (!slack_node_rw_failed) {
-                            ALOGE("Failed to write to %s", DCVS_CPU0_SLACK_MIN_NODE);
-                        }
-
-                        rc = 1;
-                    }
-                }
-
-                if (saved_mpdecision_slack_max != -1) {
-                    snprintf(tmp_str, NODE_MAX, "%d", saved_mpdecision_slack_max);
-
-                    if (sysfs_write(MPDECISION_SLACK_MAX_NODE, tmp_str) != 0) {
-                        if (!slack_node_rw_failed) {
-                            ALOGE("Failed to write to %s", MPDECISION_SLACK_MAX_NODE);
-                        }
-
-                        rc = 1;
-                    }
-                }
-
-                if (saved_mpdecision_slack_min != -1) {
-                    snprintf(tmp_str, NODE_MAX, "%d", saved_mpdecision_slack_min);
-
-                    if (sysfs_write(MPDECISION_SLACK_MIN_NODE, tmp_str) != 0) {
-                        if (!slack_node_rw_failed) {
-                            ALOGE("Failed to write to %s", MPDECISION_SLACK_MIN_NODE);
-                        }
-
-                        rc = 1;
-                    }
-                }
-            }
-
-            slack_node_rw_failed = rc;
-        }
-    }
-
-    saved_interactive_mode = !!on;
-}
-
-struct power_module HAL_MODULE_INFO_SYM = {
-    .common = {
-        .tag = HARDWARE_MODULE_TAG,
-        .module_api_version = POWER_MODULE_API_VERSION_0_2,
-        .hal_api_version = HARDWARE_HAL_API_VERSION,
-        .id = POWER_HARDWARE_MODULE_ID,
-        .name = "QCOM Power HAL",
-        .author = "Qualcomm",
-        .methods = &power_module_methods,
+struct cm_power_module HAL_MODULE_INFO_SYM = {
+    base: {
+        common: {
+            tag: HARDWARE_MODULE_TAG,
+            module_api_version: POWER_MODULE_API_VERSION_0_2,
+            hal_api_version: HARDWARE_HAL_API_VERSION,
+            id: POWER_HARDWARE_MODULE_ID,
+            name: "CM Power HAL",
+            author: "The CyanogenMod Project",
+            methods: &power_module_methods,
+        },
+       init: cm_power_init,
+       setInteractive: cm_power_set_interactive,
+       powerHint: cm_power_hint,
     },
 
-    .init = power_init,
-    .powerHint = power_hint,
-    .setInteractive = set_interactive,
+    lock: PTHREAD_MUTEX_INITIALIZER,
+    boostpulse_fd: -1,
+    boostpulse_warned: 0,
 };
