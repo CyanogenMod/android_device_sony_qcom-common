@@ -56,6 +56,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.extension_library=/system/lib/libqc-opt.so
 
+# Qualcomm random numbers generated
+PRODUCT_PACKAGES += qrngd
+
 # OpenGL ES
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=131072
