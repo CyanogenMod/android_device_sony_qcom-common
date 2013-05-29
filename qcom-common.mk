@@ -28,6 +28,10 @@ PRODUCT_PACKAGES += \
     libtilerenderer \
     libI420colorconvert
 
+# Camera wrapper
+PRODUCT_PACKAGES += \
+    camera.qcom
+
 # Omx
 PRODUCT_PACKAGES += \
     libOmxAacEnc \
