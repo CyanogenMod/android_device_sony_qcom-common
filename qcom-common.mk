@@ -49,8 +49,7 @@ PRODUCT_PACKAGES += \
 
 # QCOM
 PRODUCT_PROPERTY_OVERRIDES += \
-    com.qc.hardware=true \
-    dev.pm.dyn_samplingrate=1
+    com.qc.hardware=true
 
 # QC Perf
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -68,9 +67,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.hw=1 \
     debug.egl.hw=1 \
     debug.composition.type=dyn \
-    debug.mdpcomp.maxlayer=3 \
-    debug.enable.wl_log=1 \
-    debug.mdpcomp.logs=0
+    persist.hwc.mdpcomp.enable=true \
+    debug.mdpcomp.logs=0 \
+    ro.hwui.text_cache_width=2048
 
 # Wifi
 PRODUCT_PROPERTY_OVERRIDES += \
