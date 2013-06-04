@@ -1318,7 +1318,7 @@ blockingWrite(int fd, const void *buffer, size_t len) {
         do {
             written = write (fd, toWrite + writeOffset,
                                 len - writeOffset);
-        } while (written < 0 && errno == EINTR);
+        } while (written < 0 && ((errno == EINTR) || (errno == EAGAIN)));
 
         if (written >= 0) {
             writeOffset += written;
@@ -3327,7 +3327,7 @@ const char *
 failCauseToString(RIL_Errno e) {
     switch(e) {
         case RIL_E_SUCCESS: return "E_SUCCESS";
-        case RIL_E_RADIO_NOT_AVAILABLE: return "E_RAIDO_NOT_AVAILABLE";
+        case RIL_E_RADIO_NOT_AVAILABLE: return "E_RADIO_NOT_AVAILABLE";
         case RIL_E_GENERIC_FAILURE: return "E_GENERIC_FAILURE";
         case RIL_E_PASSWORD_INCORRECT: return "E_PASSWORD_INCORRECT";
         case RIL_E_SIM_PIN2: return "E_SIM_PIN2";
