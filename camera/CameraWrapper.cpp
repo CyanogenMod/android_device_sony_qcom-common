@@ -145,6 +145,9 @@ static char * camera_fixup_getparams(int id, const char * settings)
         }
     }
 
+    params.set("video-hdr", VALUE_SONY_OFF);
+    params.set("video-hdr-supported", "true");
+
     android::String8 strParams = params.flatten();
     char *ret = strdup(strParams.string());
 
@@ -156,16 +159,6 @@ char * camera_fixup_setparams(int id, const char * settings)
 {
     android::CameraParameters params;
     params.unflatten(android::String8(settings));
-
-    char value[3];
-    bool isHdr = false;
-
-    // for now we can force the video HDR state via a property, for testing
-    property_get("sony.force.hdr", value, NULL);
-
-    if (strcmp(value, "on") == 0){
-        isHdr = true;
-    }
 
     if (params.get(android::CameraParameters::KEY_ISO_MODE)) {
         const char* isoMode = params.get(android::CameraParameters::KEY_ISO_MODE);
@@ -202,9 +195,9 @@ char * camera_fixup_setparams(int id, const char * settings)
             params.set(KEY_SONY_IMAGE_STABILISER, VALUE_SONY_OFF);
             params.set(KEY_SONY_VIDEO_HDR, VALUE_SONY_OFF);
 
-            // TODO: Allow setting this from the camera app
-            if (isHdr)
+            if (strcmp(params.get("video-hdr"), VALUE_SONY_ON) == 0) {
                 params.set(KEY_SONY_VIDEO_HDR, VALUE_SONY_ON);
+            }
         }
     }
 
