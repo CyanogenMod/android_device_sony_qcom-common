@@ -167,6 +167,14 @@ char * camera_fixup_setparams(int id, const char * settings)
         isHdr = true;
     }
 
+    if (params.get("shutter-speed")) {
+        const char* shutterSpeed = params.get("shutter-speed");
+        if (strcmp(shutterSpeed, "auto") != 0) {
+            params.set("sony-shutter-speed", shutterSpeed);
+            params.set(KEY_SONY_AE_MODE, "shutter-prio");
+        }
+    }
+
     if (params.get(android::CameraParameters::KEY_ISO_MODE)) {
         const char* isoMode = params.get(android::CameraParameters::KEY_ISO_MODE);
         if (strcmp(isoMode, "auto") != 0) {
@@ -175,12 +183,17 @@ char * camera_fixup_setparams(int id, const char * settings)
         if (params.get(KEY_SONY_AE_MODE_VALUES)) {
             const char* aeModes = params.get(KEY_SONY_AE_MODE_VALUES);
             if (strcmp(isoMode, "auto") == 0) {
-                if (strstr(aeModes, "auto") != NULL) {
+                if ((strstr(aeModes, "auto") != NULL) &&
+                    (strcmp(params.get(KEY_SONY_AE_MODE), "shutter-prio") != 0)) {
                     params.set(KEY_SONY_AE_MODE, "auto");
                 }
             } else {
                 if (strstr(aeModes, "iso-prio") != NULL) {
-                    params.set(KEY_SONY_AE_MODE, "iso-prio");
+                    if (strcmp(params.get(KEY_SONY_AE_MODE), "shutter-prio") != 0) {
+                        params.set(KEY_SONY_AE_MODE, "manual");
+                    } else {
+                        params.set(KEY_SONY_AE_MODE, "iso-prio");
+                    }
                 }
             }
         }
