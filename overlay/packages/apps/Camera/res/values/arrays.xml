@@ -108,4 +108,48 @@
         <item>high-sensitivity</item>
     </string-array>
 
+<string-array name="pref_camera_iso_entries" translatable="false">
+        <item>@string/pref_camera_iso_entry_auto</item>
+        <item>@string/pref_camera_iso_entry_iso6400</item>
+        <item>@string/pref_camera_iso_entry_iso3200</item>
+        <item>@string/pref_camera_iso_entry_iso2500</item>
+        <item>@string/pref_camera_iso_entry_iso2000</item>
+        <item>@string/pref_camera_iso_entry_iso1600</item>
+        <item>@string/pref_camera_iso_entry_iso1250</item>
+        <item>@string/pref_camera_iso_entry_iso1200</item>
+        <item>@string/pref_camera_iso_entry_iso1000</item>
+        <item>@string/pref_camera_iso_entry_iso800</item>
+        <item>@string/pref_camera_iso_entry_iso640</item>
+        <item>@string/pref_camera_iso_entry_iso500</item>
+        <item>@string/pref_camera_iso_entry_iso400</item>
+        <item>@string/pref_camera_iso_entry_iso320</item>
+        <item>@string/pref_camera_iso_entry_iso250</item>
+        <item>@string/pref_camera_iso_entry_iso200</item>
+        <item>@string/pref_camera_iso_entry_iso125</item>
+        <item>@string/pref_camera_iso_entry_iso100</item>
+        <item>@string/pref_camera_iso_entry_iso50</item>
+    </string-array>
+
+    <string-array name="pref_camera_iso_entryvalues" translatable="false">
+        <item>auto</item>
+        <item>6400</item>
+        <item>3200</item>
+        <item>2500</item>
+        <item>2000</item>
+        <item>1600</item>
+        <item>1250</item>
+        <item>1200</item>
+        <item>1000</item>
+        <item>800</item>
+        <item>640</item>
+        <item>500</item>
+        <item>400</item>
+        <item>320</item>
+        <item>250</item>
+        <item>200</item>
+        <item>125</item>
+        <item>100</item>
+        <item>50</item>
+    </string-array>
+
 </resources>
