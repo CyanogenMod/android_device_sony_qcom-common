@@ -1,5 +1,3 @@
-app/ProfilerPlaybackTools.apk
-bin/gpu_dcvsd
 etc/firmware/a225_pfp.fw
 etc/firmware/a225_pm4.fw
 etc/firmware/a225p5_pm4.fw
@@ -7,13 +5,11 @@ etc/firmware/a300_pfp.fw
 etc/firmware/a300_pm4.fw
 etc/firmware/leia_pfp_470.fw
 etc/firmware/leia_pm4_470.fw
-etc/firmware/yamato_pfp.fw
-etc/firmware/yamato_pm4.fw
 lib/egl/eglsubAndroid.so
 lib/egl/libEGL_adreno200.so
 lib/egl/libGLESv1_CM_adreno200.so
+lib/egl/libGLESv2S3D_adreno200.so
 lib/egl/libGLESv2_adreno200.so
-lib/egl/libplayback_adreno200.so
 lib/egl/libq3dtools_adreno200.so
 lib/libC2D2.so
 lib/libOpenCL.so
@@ -22,6 +18,5 @@ lib/libc2d2_a3xx.so
 lib/libc2d2_z180.so
 lib/libgsl.so
 lib/libllvm-a3xx.so
-lib/libllvm-arm.so
 lib/libsc-a2xx.so
 lib/libsc-a3xx.so
