@@ -64,7 +64,7 @@ PRODUCT_PACKAGES += qrngd
 
 # OpenGL ES
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.opengles.version=131072
+    ro.opengles.version=196608
 
 # QCOM Display
 PRODUCT_PROPERTY_OVERRIDES += \
