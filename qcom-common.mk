@@ -76,7 +76,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
     wifi.supplicant_scan_interval=15
 
-ifneq ($(USE_ADRENO_42),true)
+ifneq ($(USE_ADRENO_2XX),true)
 # OpenGL ES 3.0
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196608
