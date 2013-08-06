@@ -19,10 +19,6 @@ domain_auto_trans(bluetooth_loader, hci_attach_exec, hci_attach)
 allow hci_attach devpts:chr_file rw_file_perms;
 allow hci_attach bluetooth_loader:fd use;
 
-# Read mac address from persist partition
-allow bluetooth_loader persist_file:dir search;
-r_dir_file(bluetooth_loader, persist_bluetooth_file)
-
 # Talk to init over the property socket
 unix_socket_connect(bluetooth_loader, property, init)
 # Set persist.service.bdroid.* and bluetooth.* property values
