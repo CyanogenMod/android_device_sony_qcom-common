@@ -6,3 +6,4 @@ type power_control_device, dev_type;
 type efs_block_device, dev_type;
 type bluetooth_device, dev_type;
 type shared_memory_device, dev_type;
+type rfkill_device, dev_type;
