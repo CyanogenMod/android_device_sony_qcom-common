@@ -62,24 +62,28 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Qualcomm random numbers generated
 PRODUCT_PACKAGES += qrngd
 
-# QCOM Display
-PRODUCT_PROPERTY_OVERRIDES += \
-    debug.sf.hw=1 \
-    debug.egl.hw=1 \
-    debug.composition.type=dyn \
-    persist.hwc.mdpcomp.enable=true \
-    debug.mdpcomp.logs=0
-
 # Wifi
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
     wifi.supplicant_scan_interval=15
 
+# QCOM Display
+PRODUCT_PROPERTY_OVERRIDES += \
+    debug.sf.hw=1 \
+    debug.egl.hw=1 \
+    persist.hwc.mdpcomp.enable=true \
+    debug.mdpcomp.logs=0
+
 ifneq ($(USE_ADRENO_42),true)
+ifneq ($(USE_ADRENO_330),true)
+PRODUCT_PROPERTY_OVERRIDES += \
+    debug.composition.type=dyn
+
 # OpenGL ES 3.0
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196608
 
 # Include non-opensource parts
 $(call inherit-product, vendor/sony/qcom-common/qcom-common-vendor.mk)
+endif
 endif
