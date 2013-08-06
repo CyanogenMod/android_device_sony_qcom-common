@@ -71,7 +71,6 @@ BOARD_SEPOLICY_UNION += \
     bluetooth_loader.te \
     bridge.te \
     camera.te \
-    conn_init.te \
     device.te \
     dhcp.te \
     domain.te \
@@ -86,7 +85,6 @@ BOARD_SEPOLICY_UNION += \
     qmux.te \
     rild.te \
     rmt.te \
-    sensors.te \
     surfaceflinger.te \
     system.te \
     tee.te \
