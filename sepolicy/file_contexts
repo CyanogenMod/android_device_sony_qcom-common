@@ -55,6 +55,11 @@
 /dev/socket/qmux_radio(/.*)?     u:object_r:qmuxd_socket:s0
 /dev/socket/mpdecision(/.*)?     u:object_r:mpdecision_socket:s0
 
+# Block labeling
+/dev/block/mmcblk0p18          u:object_r:efs_block_device:s0
+/dev/block/mmcblk0p19          u:object_r:efs_block_device:s0
+/dev/block/mmcblk0p20          u:object_r:efs_block_device:s0
+
 # Modem firmware loader
 /dev/ks_hsic_bridge                u:object_r:kickstart_device:s0
 /dev/efs_hsic_bridge               u:object_r:kickstart_device:s0
@@ -76,5 +81,6 @@
 /system/bin/efsks                u:object_r:kickstart_exec:s0
 /system/bin/ks                   u:object_r:kickstart_exec:s0
 /system/bin/qcks                 u:object_r:kickstart_exec:s0
+/system/etc/kickstart_checker.sh u:object_r:kickstart_exec:s0
 /system/bin/hci_qcomm_init       u:object_r:hci_attach_exec:s0
 /system/etc/init.qcom.bt.sh      u:object_r:bluetooth_loader_exec:s0
