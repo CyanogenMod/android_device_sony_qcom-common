@@ -48,6 +48,9 @@
 /dev/kgsl-3d0                  u:object_r:kgsl_device:s0
 /dev/kgsl                      u:object_r:kgsl_device:s0
 
+# for wpa
+/dev/rfkill                    u:object_r:rfkill_device:s0
+
 # Sockets
 /dev/socket/qmux_audio(/.*)?     u:object_r:qmuxd_socket:s0
 /dev/socket/qmux_bluetooth(/.*)? u:object_r:qmuxd_socket:s0
@@ -64,6 +67,7 @@
 /data/misc/audio(/.*)?         u:object_r:audio_data_file:s0
 /data/nfc(/.*)?                u:object_r:nfc_data_file:s0
 /data/qcks(/.*)?               u:object_r:kickstart_data_file:s0
+/data/etc/wlan_macaddr[0-3]    u:object_r:wifi_data_file:s0
 
 # System binaries
 /system/bin/rmt_storage          u:object_r:rmt_exec:s0
