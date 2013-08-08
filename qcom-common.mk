@@ -72,8 +72,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.egl.hw=1 \
     debug.composition.type=dyn \
     persist.hwc.mdpcomp.enable=true \
-    debug.mdpcomp.logs=0 \
-    ro.hwui.text_cache_width=2048
+    debug.mdpcomp.logs=0
 
 # Wifi
 PRODUCT_PROPERTY_OVERRIDES += \
