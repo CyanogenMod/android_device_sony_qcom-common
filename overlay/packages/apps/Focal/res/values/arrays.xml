@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2013 The CyanogenMod Project
+
+     This program is free software; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License
+     as published by the Free Software Foundation; either version 2
+     of the License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+     MA  02110-1301, USA.
+-->
+<resources>
+    <!-- ISO widget values -->
+    <string-array name="widget_iso_values" translatable="false">
+        <item>auto</item>
+        <item>ISO_HJR</item>
+        <item>100</item>
+        <item>125</item>
+        <item>160</item>
+        <item>200</item>
+        <item>250</item>
+        <item>320</item>
+        <item>400</item>
+        <item>500</item>
+        <item>640</item>
+        <item>800</item>
+        <item>1000</item>
+        <item>1250</item>
+        <item>1600</item>
+        <item>2000</item>
+        <item>2500</item>
+        <item>3200</item>
+    </string-array>
+
+    <array name="widget_iso_icons" translatable="false">
+        <item>@drawable/ic_widget_iso_auto</item>
+        <item>@drawable/ic_widget_iso_hjr</item>
+        <item>@drawable/ic_widget_iso_100</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_iso_200</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_iso_400</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_iso_800</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_iso_1600</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_placeholder</item>
+        <item>@drawable/ic_widget_placeholder</item>
+    </array>
+
+    <string-array name="widget_iso_hints">
+        <item>Automatic ISO</item>
+        <item>Hands-Jitter Reduction ISO</item>
+        <item>100 ISO</item>
+        <item>125 ISO</item>
+        <item>160 ISO</item>
+        <item>200 ISO</item>
+        <item>250 ISO</item>
+        <item>320 ISO</item>
+        <item>400 ISO</item>
+        <item>500 ISO</item>
+        <item>640 ISO</item>
+        <item>800 ISO</item>
+        <item>1000 ISO</item>
+        <item>1250 ISO</item>
+        <item>1600 ISO</item>
+        <item>2000 ISO</item>
+        <item>2500 ISO</item>
+        <item>3200 ISO</item>
+    </string-array>
+</resources>
