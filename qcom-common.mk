@@ -19,37 +19,13 @@ DEVICE_PACKAGE_OVERLAYS += $(COMMON_PATH)/overlay
 PRODUCT_COPY_FILES += \
     $(COMMON_PATH)/rootdir/system/etc/media_codecs.xml:system/etc/media_codecs.xml
 
-# QCOM Display
-PRODUCT_PACKAGES += \
-    libgenlock \
-    libmemalloc \
-    liboverlay \
-    libqdutils \
-    libtilerenderer \
-    libI420colorconvert
-
 # Camera wrapper
 PRODUCT_PACKAGES += \
     camera.qcom
 
 # Omx
 PRODUCT_PACKAGES += \
-    libOmxAacEnc \
-    libOmxAmrEnc \
-    libOmxCore \
-    libOmxEvrcEnc \
-    libOmxQcelp13Enc \
-    libOmxVdec \
-    libOmxVenc \
-    libc2dcolorconvert \
-    libdashplayer \
-    libdivxdrmdecrypt \
-    libmm-omxcore \
-    libstagefrighthw
-
-# Power
-PRODUCT_PACKAGES += \
-    power.qcom
+    libc2dcolorconvert
 
 # QCOM
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -77,3 +53,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Include non-opensource parts
 $(call inherit-product, vendor/sony/qcom-common/qcom-common-vendor.mk)
+
+# qcom common
+$(call inherit-product, device/qcom/qcom-common/qcom-common.mk)

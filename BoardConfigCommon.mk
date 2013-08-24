@@ -12,29 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# QCOM hardware
-COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
-BOARD_USES_QCOM_HARDWARE := true
+# inherit from qcom-common
+-include device/qcom/qcom-common/BoardConfigCommon.mk
 
-TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
 BOARD_HAS_NO_MISC_PARTITION := true
 
-# Architecture
-TARGET_ARCH := arm
-TARGET_CPU_ABI := armeabi-v7a
-TARGET_CPU_ABI2 := armeabi
-TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_SMP := true
-
-# Power HAL
-TARGET_PROVIDES_POWERHAL := true
-
-# Graphics
-TARGET_QCOM_DISPLAY_VARIANT := caf
-USE_OPENGL_RENDERER := true
-TARGET_USES_ION := true
-TARGET_USES_C2D_COMPOSITION := true
 
 # Camera
 TARGET_PROVIDES_CAMERA_HAL := true
@@ -48,7 +32,6 @@ endif
 BOARD_PROVIDES_LIBRIL := true
 
 # Audio
-TARGET_QCOM_AUDIO_VARIANT := caf
 TARGET_USES_QCOM_COMPRESSED_AUDIO := true
 
 # QCOM enhanced A/V
@@ -56,10 +39,6 @@ TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 
 # Bluetoth
 BOARD_HAVE_BLUETOOTH := true
-
-# Webkit
-ENABLE_WEBGL := true
-TARGET_FORCE_CPU_UPLOAD := true
 
 BOARD_SEPOLICY_DIRS += \
     device/sony/qcom-common/sepolicy
