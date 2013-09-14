@@ -131,20 +131,22 @@ static char * camera_fixup_getparams(int id, const char * settings)
 
     camera_fixup_capability(&params);
 
-    // fixup the iso mode list with those that are in the sony list
-    const char* isoModeList = params.get(KEY_SONY_ISO_AVAIL_MODES);
-    char buffer[255] = "ISO";
-    char bufferPos = 3;
-    for (int pos = 0; pos < strlen(isoModeList); pos++) {
-        if (isoModeList[pos] != ',') {
-            buffer[bufferPos++] = isoModeList[pos];
-        } else {
-            strcat(buffer,",ISO");
-            bufferPos += 4;
+    if (params.get(KEY_SONY_ISO_AVAIL_MODES)) {
+        // fixup the iso mode list with those that are in the sony list
+        const char* isoModeList = params.get(KEY_SONY_ISO_AVAIL_MODES);
+        char buffer[255] = "ISO";
+        char bufferPos = 3;
+        for (int pos = 0; pos < strlen(isoModeList); pos++) {
+            if (isoModeList[pos] != ',') {
+                buffer[bufferPos++] = isoModeList[pos];
+            } else {
+                strcat(buffer,",ISO");
+                bufferPos += 4;
+            }
         }
-    }
     sprintf(buffer, "%s,auto", buffer);
     params.set(android::CameraParameters::KEY_SUPPORTED_ISO_MODES, buffer);
+    }
 
     if (params.get(KEY_SONY_IMAGE_STABILISER)) {
         const char* sony_is = params.get(KEY_SONY_IMAGE_STABILISER);
