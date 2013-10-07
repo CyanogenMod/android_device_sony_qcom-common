@@ -51,6 +51,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     power.qcom
 
+# Lights
+PRODUCT_PACKAGES += \
+    lights.qcom
+
 # QCOM
 PRODUCT_PROPERTY_OVERRIDES += \
     com.qc.hardware=true
