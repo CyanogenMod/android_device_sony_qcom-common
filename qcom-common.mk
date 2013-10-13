@@ -71,6 +71,22 @@ PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
     wifi.supplicant_scan_interval=15
 
+ifeq ($(BOARD_WLAN_DEVICE),qcwcn)
+PRODUCT_PROPERTY_OVERRIDES += \
+    wlan.driver.ath=0
+
+# Hostapd
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/system/etc/hostapd/hostapd_default.conf:system/etc/hostapd/hostapd_default.conf \
+    $(LOCAL_PATH)/rootdir/system/etc/hostapd/hostapd.accept:system/etc/hostapd/hostapd.accept \
+    $(LOCAL_PATH)/rootdir/system/etc/hostapd/hostapd.deny:system/etc/hostapd/hostapd.deny
+
+# SoftAP
+PRODUCT_PACKAGES += \
+    libQWiFiSoftApCfg \
+    libqsap_sdk
+endif
+
 # QCOM Display
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.hw=1 \
