@@ -22,8 +22,8 @@
 */
 
 
-//#define LOG_NDEBUG 0
-//#define LOG_PARAMETERS
+#define LOG_NDEBUG 0
+#define LOG_PARAMETERS
 
 #define LOG_TAG "CameraWrapper"
 #include <cutils/log.h>
@@ -41,6 +41,7 @@ static char KEY_SONY_IMAGE_STABILISER_VALUES[] = "sony-is-values";
 static char KEY_SONY_IMAGE_STABILISER[] = "sony-is";
 static char KEY_SONY_VIDEO_STABILISER[] = "sony-vs";
 static char KEY_SONY_VIDEO_HDR[] = "sony-video-hdr";
+static char KEY_SONY_VIDEO_HDR_VALUES[] = "sony-video-hdr-values";
 static char KEY_SONY_ISO_AVAIL_MODES[] = "sony-iso-values";
 static char KEY_SONY_ISO_MODE[] = "sony-iso";
 static char KEY_SONY_AE_MODE_VALUES[] = "sony-ae-mode-values";
@@ -156,8 +157,9 @@ static char * camera_fixup_getparams(int id, const char * settings)
         }
     }
 
-    if (params.get(KEY_SONY_VIDEO_HDR)) {
-        params.set("video-hdr-supported", "true");
+    if (params.get(KEY_SONY_VIDEO_HDR) && params.get(KEY_SONY_VIDEO_HDR_VALUES)) {
+        params.set("video-hdr-values", params.get(KEY_SONY_VIDEO_HDR_VALUES));
+        params.set("video-hdr", params.get(KEY_SONY_VIDEO_HDR));
     }
 
     if (params.get(KEY_SONY_ISO_MODE)) {
@@ -251,6 +253,11 @@ char * camera_fixup_setparams(int id, const char * settings)
         } else {
             params.set(KEY_SONY_IMAGE_STABILISER, VALUE_SONY_ON);
         }
+    }
+
+    if (params.get(KEY_SONY_VIDEO_HDR) && params.get("video-hdr")) {
+        //params.set("video-hdr-values", params.get(KEY_SONY_VIDEO_HDR_VALUES));
+        params.set(KEY_SONY_VIDEO_HDR, params.get("video-hdr"));
     }
 
     if (params.get(android::CameraParameters::KEY_RECORDING_HINT)) {
