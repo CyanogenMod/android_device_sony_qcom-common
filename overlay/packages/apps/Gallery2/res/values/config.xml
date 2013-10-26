@@ -17,4 +17,6 @@
 
     <bool name="enableVideoHDR">true</bool>
 
+    <bool name="enableShutterSpeed">true</bool>
+
 </resources>
