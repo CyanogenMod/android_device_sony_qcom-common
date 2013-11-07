@@ -6,7 +6,6 @@
 /dev/msm_amrwb.*               u:object_r:audio_device:s0
 /dev/msm_aac.*                 u:object_r:audio_device:s0
 
-/dev/pn544                     u:object_r:nfc_device:s0
 /dev/qseecom                   u:object_r:tee_device:s0
 
 # Jpeg Engine support
@@ -68,8 +67,8 @@
 /dev/efs_hsic_bridge               u:object_r:kickstart_device:s0
 
 # Data labeling
-/data/audio(/.*)?              u:object_r:audio_data_file:s0
-/data/misc/audio(/.*)?         u:object_r:audio_data_file:s0
+/data/audio(/.*)?              u:object_r:audio_firmware_file:s0
+/data/misc/audio(/.*)?         u:object_r:audio_firmware_file:s0
 /data/nfc(/.*)?                u:object_r:nfc_data_file:s0
 /data/qcks(/.*)?               u:object_r:kickstart_data_file:s0
 /data/etc/bluetooth_bdaddr     u:object_r:bluetooth_data_file:s0
