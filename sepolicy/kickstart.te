@@ -1,7 +1,6 @@
 # kickstart processes and scripts
 type kickstart, domain;
 type kickstart_exec, exec_type, file_type;
-type kickstart_device, dev_type;
 
 # kickstart_checker.sh talks to init over the property socket
 unix_socket_connect(kickstart, property, init)
@@ -47,3 +46,6 @@ allow kickstart kickstart_device:chr_file rw_file_perms;
 # set wake locks
 allow kickstart sysfs:file { append };
 
+allow kickstart system_data_file:dir { write add_name };
+allow kickstart system_data_file:file { write open };
+allow kickstart device:sock_file write;
