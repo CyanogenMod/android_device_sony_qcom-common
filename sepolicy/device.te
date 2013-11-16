@@ -10,3 +10,6 @@ type rfkill_device, dev_type;
 
 # Qualcomm MSM Audio ACDB device
 type msm_acdb_device, dev_type;
+
+# Kickstart device used by QC qcks
+type kickstart_device, dev_type;
