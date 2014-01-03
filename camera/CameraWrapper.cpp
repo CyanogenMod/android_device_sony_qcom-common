@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013, The CyanogenMod Project
+ * Copyright (C) 2012-2014, The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@
 #include <hardware/camera.h>
 #include <camera/Camera.h>
 #include <camera/CameraParameters.h>
-#include <cutils/properties.h>
 
 // Sony parameter names
 static char KEY_SONY_IMAGE_STABILISER_VALUES[] = "sony-is-values";
@@ -67,8 +66,8 @@ static struct hw_module_methods_t camera_module_methods = {
 camera_module_t HAL_MODULE_INFO_SYM = {
     common: {
          tag: HARDWARE_MODULE_TAG,
-         version_major: 1,
-         version_minor: 0,
+         module_api_version: CAMERA_MODULE_API_VERSION_1_0,
+         hal_api_version: HARDWARE_HAL_API_VERSION,
          id: CAMERA_HARDWARE_MODULE_ID,
          name: "Xperia Camera Wrapper",
          author: "The CyanogenMod Project",
@@ -78,7 +77,9 @@ camera_module_t HAL_MODULE_INFO_SYM = {
     },
     get_number_of_cameras: camera_get_number_of_cameras,
     get_camera_info: camera_get_camera_info,
-    set_callbacks: NULL,
+    set_callbacks: NULL, /* remove compilation warnings */
+    get_vendor_tag_ops: NULL, /* remove compilation warnings */
+    reserved: {0}, /* remove compilation warnings */
 };
 
 typedef struct wrapper_camera_device {
