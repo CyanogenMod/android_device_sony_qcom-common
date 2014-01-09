@@ -16,9 +16,6 @@ USE_ADRENO_330 := true
 
 $(call inherit-product, device/sony/qcom-common/qcom-common.mk)
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    debug.composition.type=c2d
-
 # OpenGL ES 3.0
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196608
