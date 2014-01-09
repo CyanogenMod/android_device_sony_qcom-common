@@ -89,10 +89,7 @@ endif
 
 # QCOM Display
 PRODUCT_PROPERTY_OVERRIDES += \
-    debug.sf.hw=1 \
-    debug.egl.hw=1 \
-    persist.hwc.mdpcomp.enable=true \
-    debug.mdpcomp.logs=0
+    persist.hwc.mdpcomp.enable=true
 
 ifneq ($(USE_ADRENO_42),true)
 ifneq ($(USE_ADRENO_330),true)
