@@ -61,9 +61,9 @@
 /dev/block/mmcblk0p6          u:object_r:rmt_block_device:s0
 /dev/block/mmcblk0p7          u:object_r:rmt_block_device:s0
 /dev/block/mmcblk0p8          u:object_r:rmt_block_device:s0
-/dev/block/mmcblk0p18          u:object_r:efs_block_device:s0
-/dev/block/mmcblk0p19          u:object_r:efs_block_device:s0
-/dev/block/mmcblk0p20          u:object_r:efs_block_device:s0
+/dev/block/mmcblk0p18          u:object_r:rmt_block_device:s0
+/dev/block/mmcblk0p19          u:object_r:rmt_block_device:s0
+/dev/block/mmcblk0p20          u:object_r:rmt_block_device:s0
 
 # Modem firmware loader
 /dev/ks_hsic_bridge                u:object_r:kickstart_device:s0
