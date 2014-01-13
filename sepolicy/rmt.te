@@ -6,10 +6,12 @@ type rmt_exec, exec_type, file_type;
 init_daemon_domain(rmt)
 
 # opens and reads the primary block device
-allow rmt block_device:blk_file { open read };
+allow rmt block_device:blk_file { read write open };
+
 allow rmt block_device:dir search;
 
-allow rmt rmt_block_device:blk_file { open read write };
+allow rmt rmt_block_device:blk_file { read write open };
+allow rmt efs_block_device:blk_file { read write open };
 allow rmt rmt_block_device:dir search;
 
 # XXX should we allow sys_rawio on /dev/mem?
