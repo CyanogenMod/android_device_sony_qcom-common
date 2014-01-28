@@ -64,7 +64,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.extension_library=/system/lib/libqc-opt.so
 
 # Qualcomm random numbers generated
-PRODUCT_PACKAGES += qrngd
+PRODUCT_PACKAGES += \
+    qrngd \
+    qrngp
 
 # Wifi
 PRODUCT_PROPERTY_OVERRIDES += \
