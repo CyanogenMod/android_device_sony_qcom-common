@@ -9,6 +9,8 @@ LOCAL_SRC_FILES:= \
     ril.cpp \
     ril_event.cpp
 
+LOCAL_C_INCLUDES := $(LOCAL_PATH)
+
 LOCAL_SHARED_LIBRARIES := \
     liblog \
     libutils \
@@ -46,6 +48,8 @@ include $(BUILD_SHARED_LIBRARY)
 # =========================================
 ifneq ($(ANDROID_BIONIC_TRANSITION),)
 include $(CLEAR_VARS)
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_SRC_FILES:= \
     ril.cpp
