@@ -91,7 +91,7 @@ endif
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.hwc.mdpcomp.enable=true
 
-ifneq ($(USE_ADRENO_42),true)
+ifneq ($(USE_ADRENO_2XX),true)
 ifneq ($(USE_ADRENO_330),true)
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.composition.type=dyn
