@@ -23,6 +23,9 @@ TARGET_CPU_ABI2 := armeabi
 TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_SMP := true
 
+# Kernel
+TARGET_CUSTOM_DTBTOOL := dtbToolCM
+
 # Use the CM PowerHAL
 TARGET_USES_CM_POWERHAL := true
 CM_POWERHAL_EXTENSION := qcom
