@@ -23,8 +23,8 @@ TARGET_CPU_ABI2 := armeabi
 TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_SMP := true
 
-# Use the CM PowerHAL
-CM_POWERHAL_EXTENSION := qcom
+# Power HAL
+TARGET_POWERHAL_VARIANT := qcom
 
 # Lights HAL
 TARGET_PROVIDES_LIBLIGHT := true
