@@ -46,7 +46,7 @@ endif
 BOARD_PROVIDES_LIBRIL := true
 BOARD_USES_QCOM_RIL_RESPONSE_5_ELEMENTS := true
 
-# Bluetoth
+# Bluetooth
 BOARD_HAVE_BLUETOOTH := true
 
 # Webkit
