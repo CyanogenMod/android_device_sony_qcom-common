@@ -100,7 +100,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196608
 
+ifneq ($(HAS_OWN_ADRENO_BLOBS),true)
 # Include non-opensource parts
 $(call inherit-product, vendor/sony/qcom-common/qcom-common-vendor.mk)
+endif
 endif
 endif
