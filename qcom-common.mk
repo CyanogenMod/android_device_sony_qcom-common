@@ -91,26 +91,18 @@ endif
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.hwc.mdpcomp.enable=true
 
-ifeq ($(USE_ADRENO_42),true)
-# OpenGL ES 2.0
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.opengles.version=131072
-
+ifneq ($(USE_ADRENO_42),true)
+ifneq ($(USE_ADRENO_330),true)
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.composition.type=dyn
-else
+
 # OpenGL ES 3.0
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196608
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    debug.composition.type=c2d
-endif
-
-ifneq ($(USE_ADRENO_330),true)
 ifneq ($(HAS_OWN_ADRENO_BLOBS),true)
 # Include non-opensource parts
 $(call inherit-product, vendor/sony/qcom-common/qcom-common-vendor.mk)
 endif
 endif
-
+endif

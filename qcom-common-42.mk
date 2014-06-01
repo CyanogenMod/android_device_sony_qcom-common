@@ -16,3 +16,9 @@ USE_ADRENO_42 := true
 
 $(call inherit-product, device/sony/qcom-common/qcom-common.mk)
 
+# OpenGL ES 2.0
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.opengles.version=131072
+
+# Include non-opensource parts
+$(call inherit-product, vendor/sony/qcom-common/qcom-common-vendor-4.2.mk)
