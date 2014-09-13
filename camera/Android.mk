@@ -17,3 +17,5 @@ LOCAL_MODULE := camera.qcom
 LOCAL_MODULE_TAGS := optional
 
 include $(BUILD_SHARED_LIBRARY)
+
+include $(call all-subdir-makefiles,$(LOCAL_PATH))
