@@ -1797,7 +1797,7 @@ static int responseStrings(Parcel &p, void *response, size_t responselen, bool n
 }
 
 /*
- * RIL_RADIO_TECHNOLOGY: 18 (QCOM HSPAP_DC) ==> 30 (CM HSPAP_DC)
+ * RIL_RADIO_TECHNOLOGY: 19 (QCOM HSPAP_DC) ==> 30 (CM DCHSPAP)
  */
 static int responseStringsDataRegistrationState(Parcel &p, void *response, size_t responselen) {
 
@@ -1814,8 +1814,8 @@ static int responseStringsDataRegistrationState(Parcel &p, void *response, size_
     char **p_cur = (char **) response;
 
     if (p_cur[3] != NULL) {
-        if (strncmp(p_cur[3], "18", 2) == 0) {
-            ALOGE("DATA_REGISTRATION_STATE: old radio tech=18 (QCOM HSPAP_DC), new radio tech=30 (CM HSPAP_DC)");
+        if (strncmp(p_cur[3], "19", 2) == 0) {
+            ALOGE("DATA_REGISTRATION_STATE: stock radio tech=19 (QCOM HSPAP_DC), cyngn radio tech=30 (CM DCHSPAP)");
             // RIL_RADIO_TECHNOLOGY_DCHSPAP = 30
             strncpy(p_cur[3], "30", 2);
         }
