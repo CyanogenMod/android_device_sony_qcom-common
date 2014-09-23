@@ -18,10 +18,12 @@
 const char CameraParameters::KEY_ISO_MODE[] = "iso"; \
 const char CameraParameters::KEY_SUPPORTED_ISO_MODES[] = "iso-values"; \
 const char CameraParameters::KEY_AUTO_EXPOSURE[] = "auto-exposure"; \
-const char CameraParameters::KEY_SUPPORTED_AUTO_EXPOSURE[] = "auto-exposure-values";
+const char CameraParameters::KEY_SUPPORTED_AUTO_EXPOSURE[] = "auto-exposure-values"; \
+const char CameraParameters::AUTO_EXPOSURE_SPOT_METERING[] = "spot-metering";
 
 #define CAMERA_PARAMETERS_EXTRA_H \
     static const char KEY_ISO_MODE[]; \
     static const char KEY_SUPPORTED_ISO_MODES[]; \
     static const char KEY_AUTO_EXPOSURE[]; \
-    static const char KEY_SUPPORTED_AUTO_EXPOSURE[];
+    static const char KEY_SUPPORTED_AUTO_EXPOSURE[]; \
+    static const char AUTO_EXPOSURE_SPOT_METERING[];
