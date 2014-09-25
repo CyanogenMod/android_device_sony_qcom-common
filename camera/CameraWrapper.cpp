@@ -118,7 +118,7 @@ void camera_fixup_capability(android::CameraParameters *params)
         const char *supportedIsModes = params->get(KEY_SONY_IMAGE_STABILISER_VALUES);
 
         if (strstr(supportedIsModes, VALUE_SONY_STILL_HDR) != NULL) {
-            char buffer[255];
+            char buffer[512];
             const char *supportedSceneModes = params->get(android::CameraParameters::KEY_SUPPORTED_SCENE_MODES);
             sprintf(buffer, "%s,hdr", supportedSceneModes);
             params->set(android::CameraParameters::KEY_SUPPORTED_SCENE_MODES, buffer);
