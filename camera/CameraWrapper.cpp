@@ -46,6 +46,8 @@ static char KEY_SONY_AE_MODE_VALUES[] = "sony-ae-mode-values";
 static char KEY_SONY_AE_MODE[] = "sony-ae-mode";
 static char KEY_SONY_METERING_MODE_VALUES[] = "sony-metering-mode-values";
 static char KEY_SONY_METERING_MODE[] = "sony-metering-mode";
+static char KEY_SONY_FOCUS_AREA[] = "sony-focus-area";
+static char KEY_SONY_FOCUS_AREA_VALUES[] = "sony-focus-area-values";
 
 // Sony parameter values
 static char VALUE_SONY_ON[] = "on";
@@ -316,6 +318,16 @@ static char *camera_fixup_setparams(int id, const char *settings)
        } else {
            params.set(KEY_SONY_METERING_MODE, params.get(android::CameraParameters::KEY_AUTO_EXPOSURE));
        }
+    }
+
+    if (params.get(android::CameraParameters::KEY_FOCUS_AREAS)) {
+        if (strcmp(params.get(android::CameraParameters::KEY_FOCUS_AREAS), "(0,0,0,0,0)") != 0) {
+            if (params.get(KEY_SONY_FOCUS_AREA_VALUES)) {
+                params.set(KEY_SONY_FOCUS_AREA, "user");
+            } else {
+                params.set(KEY_SONY_FOCUS_AREA, "center");
+            }
+        }
     }
 
 #if !LOG_NDEBUG
