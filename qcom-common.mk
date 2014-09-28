@@ -60,8 +60,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
     com.qc.hardware=true
 
 # QC Perf
+ifeq ($(USE_OLD_QCOM_PERF_LOCATION),true)
+    QCOM_PERF_LOCATION := system
+else
+    QCOM_PERF_LOCATION := vendor
+endif
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.extension_library=/system/lib/libqc-opt.so
+    ro.vendor.extension_library=/$(QCOM_PERF_LOCATION)/lib/libqc-opt.so
 
 # Qualcomm random numbers generated
 PRODUCT_PACKAGES += qrngd
