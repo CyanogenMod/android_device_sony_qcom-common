@@ -61,7 +61,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # QC Perf
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.extension_library=/system/lib/libqc-opt.so
+    ro.vendor.extension_library=/vendor/lib/libqc-opt.so
 
 # Qualcomm random numbers generated
 PRODUCT_PACKAGES += qrngd
