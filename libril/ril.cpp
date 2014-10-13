@@ -21,7 +21,7 @@
 
 #include <hardware_legacy/power.h>
 
-#include <telephony/ril.h>
+#include "./ril.h" /* local fork of <telephony/ril.h> for SIM_IO struct change */
 #include <telephony/ril_cdma_sms.h>
 #include <cutils/sockets.h>
 #include <cutils/jstring.h>
