@@ -16,7 +16,8 @@ COMMON_PATH := device/sony/qcom-common
 
 DEVICE_PACKAGE_OVERLAYS += $(COMMON_PATH)/overlay
 
-PRODUCT_PACKAGES += media_codecs.xml
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/rootdir/system/etc/media_codecs.xml:system/etc/media_codecs.xml
 
 # QCOM Display
 PRODUCT_PACKAGES += \
