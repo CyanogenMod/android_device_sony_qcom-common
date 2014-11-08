@@ -18,5 +18,3 @@ LOCAL_MODULE := camera.qcom
 LOCAL_MODULE_TAGS := optional
 
 include $(BUILD_SHARED_LIBRARY)
-
-include $(LOCAL_PATH)/workaround/Android.mk
