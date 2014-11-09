@@ -36,8 +36,6 @@ endif
 
 LOCAL_MODULE:= libril
 
-LOCAL_LDLIBS += -lpthread
-
 #USE HCRADIO
 ifeq ($(BOARD_USES_HC_RADIO),true)
 LOCAL_CFLAGS += -DHCRADIO
@@ -66,8 +64,6 @@ LOCAL_STATIC_LIBRARIES := \
 LOCAL_CFLAGS :=
 
 LOCAL_MODULE:= libril_static
-
-LOCAL_LDLIBS += -lpthread
 
 include $(BUILD_STATIC_LIBRARY)
 endif # ANDROID_BIONIC_TRANSITION
