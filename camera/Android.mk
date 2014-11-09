@@ -9,6 +9,9 @@ endif
 LOCAL_SRC_FILES := \
     CameraWrapper.cpp
 
+LOCAL_C_INCLUDES := \
+    system/media/camera/include
+
 LOCAL_SHARED_LIBRARIES := \
     libhardware liblog libcamera_client libutils libcutils
 
