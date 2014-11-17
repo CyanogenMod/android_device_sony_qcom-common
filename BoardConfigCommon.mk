@@ -36,6 +36,7 @@ TARGET_USES_C2D_COMPOSITION := true
 
 # Camera
 TARGET_PROVIDES_CAMERA_HAL := true
+TARGET_SPECIFIC_HEADER_PATH += device/sony/qcom-common/include
 
 ifeq ($(BOARD_EGL_CFG),)
 BOARD_EGL_CFG := device/sony/qcom-common/rootdir/system/lib/egl/egl.cfg
