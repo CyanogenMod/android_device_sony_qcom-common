@@ -48,6 +48,9 @@ BOARD_USES_QCOM_RIL_RESPONSE_5_ELEMENTS := true
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
 
+# Recovery
+BOARD_CUSTOM_BOOTIMG := true
+
 # Webkit
 ENABLE_WEBGL := true
 TARGET_FORCE_CPU_UPLOAD := true
