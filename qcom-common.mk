@@ -72,21 +72,17 @@ ifeq ($(BOARD_WLAN_DEVICE),qcwcn)
 PRODUCT_PROPERTY_OVERRIDES += \
     wlan.driver.ath=0
 
-# Hostapd
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/system/etc/hostapd/hostapd_default.conf:system/etc/hostapd/hostapd_default.conf \
-    $(LOCAL_PATH)/rootdir/system/etc/hostapd/hostapd.accept:system/etc/hostapd/hostapd.accept \
-    $(LOCAL_PATH)/rootdir/system/etc/hostapd/hostapd.deny:system/etc/hostapd/hostapd.deny
-
 # SoftAP
 PRODUCT_PACKAGES += \
     libQWiFiSoftApCfg \
     libqsap_sdk
 endif
 
+# Wifi
 PRODUCT_PACKAGES += \
     libwpa_client \
     hostapd \
+    hostapd_default.conf \
     dhcpcd.conf \
     wpa_supplicant \
     wpa_supplicant.conf
