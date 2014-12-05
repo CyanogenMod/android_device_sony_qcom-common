@@ -59,6 +59,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Qualcomm random numbers generated
 PRODUCT_PACKAGES += qrngd
 
+# RIL
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.telephony.ril_class=SonyRIL
+
 # Wifi
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \

@@ -43,7 +43,7 @@ endif
 
 # RIL
 BOARD_PROVIDES_LIBRIL := true
-BOARD_USES_QCOM_RIL_RESPONSE_5_ELEMENTS := true
+BOARD_RIL_CLASS := ../../../device/sony/qcom-common/ril/
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
