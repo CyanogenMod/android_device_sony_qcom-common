@@ -43,7 +43,9 @@ endif
 
 # RIL
 BOARD_PROVIDES_LIBRIL := true
+ifeq ($(BOARD_RIL_CLASS),)
 BOARD_RIL_CLASS := ../../../device/sony/qcom-common/ril/
+endif
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true

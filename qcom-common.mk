@@ -60,8 +60,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PACKAGES += qrngd
 
 # RIL
+ifeq ($(BOARD_RIL_CLASS),)
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SonyRIL
+endif
 
 # Wifi
 PRODUCT_PROPERTY_OVERRIDES += \
