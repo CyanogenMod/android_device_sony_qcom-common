@@ -43,6 +43,7 @@ endif
 
 # RIL
 BOARD_PROVIDES_LIBRIL := true
+BOARD_USES_RIL_APPEND_RAT_TO_PLMN := true
 BOARD_RIL_CLASS := ../../../device/sony/qcom-common/ril/
 
 # Bluetooth
