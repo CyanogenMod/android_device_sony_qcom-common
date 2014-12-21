@@ -16,12 +16,13 @@
 
 package com.android.internal.telephony;
 
+import android.os.SystemProperties;
 import android.content.Context;
 
 public class SonyRIL extends RIL implements CommandsInterface {
     public SonyRIL(Context context, int networkMode, int cdmaSubscription, Integer instanceId) {
         super(context, networkMode, cdmaSubscription, instanceId);
 
-        mQANElements = 5;
+        mQANElements = SystemProperties.getInt("ro.ril.telephony.mqanelements", 5);
     }
 }
