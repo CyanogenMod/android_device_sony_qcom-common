@@ -46,7 +46,3 @@ BOARD_RIL_CLASS := ../../../device/sony/qcom-common/ril/
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
-
-# Webkit
-ENABLE_WEBGL := true
-TARGET_FORCE_CPU_UPLOAD := true
