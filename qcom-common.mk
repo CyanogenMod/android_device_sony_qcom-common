@@ -25,9 +25,11 @@ PRODUCT_PACKAGES += \
     libtilerenderer \
     libI420colorconvert
 
+ifneq ($(TARGET_PROVIDES_CAMERA_WRAPPER),true)
 # Camera wrapper
 PRODUCT_PACKAGES += \
     camera.qcom
+endif
 
 # Omx
 PRODUCT_PACKAGES += \
