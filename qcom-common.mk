@@ -75,12 +75,3 @@ PRODUCT_PACKAGES += \
 # QCOM Display
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.hwc.mdpcomp.enable=true
-
-ifneq ($(TARGET_PROVIDES_ADRENO_DRIVER),true)
-# OpenGL ES 3.0
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.opengles.version=196608
-
-# Include non-opensource parts
-$(call inherit-product, vendor/sony/qcom-common/qcom-common-vendor.mk)
-endif
